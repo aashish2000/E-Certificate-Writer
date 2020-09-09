@@ -1,68 +1,110 @@
-import pandas as pd
-from PIL import Image, ImageDraw, ImageFont
-import img2pdf
+# Required imports
+from pandas import read_csv
 import os
+import tkinter as tk
+import tkinter.font as tkFont
+from tkinter.filedialog import askopenfilename, askdirectory
+from tkinter.messagebox import showinfo, askquestion
+from tkinter.colorchooser import askcolor
+from ImgUtil import writeImage
+from TextSpaceSelector import spaceSelector
 
-def writeimage(template,font,size,coorx,coory,msg,rgb):
-	image = Image.open(template)
+# Utility function to collect column name and font size
 
-	# initialise the drawing context with
-	# the image object as background
+def inputColumnAndSize():
 
-	draw = ImageDraw.Draw(image)
+	# Create tk window and config
+	master = tk.Tk()
+	master.title('Column name and font size')
 
-	font = ImageFont.truetype(font, size=size)
-	 
-	# starting position of the message
-	 
-	(x, y) = (coorx, coory)
-	message = msg
-	color = rgb # black color
-	 
-	# draw the message on the background
+	fontStyle = tkFont.Font(family="Lucida Grande", size=22)
+	tk.Label(master, text="Enter column name containing names of participants: ", font=fontStyle).grid(row=0)
+	tk.Label(master, text="Font size of text: ", font=fontStyle).grid(row=1)
 
-	draw.text((x, y), message, fill=color, font=font)
+	e1 = tk.Entry(master)
+	e2 = tk.Entry(master)
 
-	# save the edited image
+	e1.grid(row=0, column=1)
+	e2.grid(row=1, column=1)
 
-	if image.mode == "RGBA":
-		image = image.convert("RGB")
+	col, size= None, None
 
-	image.save("./Output/"+msg+".png")
+	def colSize():
+		
+		# Get info from button
+		column, sizeImg = e1.get(), e2.get()
 
+		temp_file = open("colsize.txt","w")
+		temp_file.write('{} {}'.format(column, sizeImg))
+		temp_file.close()
 
-	with open("./Output/"+msg+".pdf","wb") as f:
-		f.write(img2pdf.convert("./Output/"+msg+".png"))
-	
-	os.remove("./Output/"+msg+".png")
+		master.destroy()
+		master.quit()
 
-	image.close()
+	tk.Button(master, text="Submit", command=colSize).grid(row=2)
+	master.mainloop()
 
-	f.close() 
+	temp_file=open('colsize.txt','r')
+	col,size=map(str, temp_file.read().strip().split())
+	size=int(size)
+	temp_file.close(); os.remove('./colsize.txt')
+	return (col, size)
 
+# Accept user input for required details
 
-#Accept User input for Required Details
+root = tk.Tk()
+root.withdraw() # Use to hide tkinter window
 
-print("Enter Certificate template Name: ", end="")
-template=input()
-print("Enter CSV Filename: ", end="")
-filename=input()
-print("Enter Column Name containing to Data: ", end="")
-col=input()
-print("Enter TrueType Font Filename: ", end="")
-font=input()
-print("Enter Font Size: ", end="")
-size=int(input())
-print("Enter Space Separated x,y Coordianates of text to written: ", end="")
-coorx,coory=map(int,input().split())
-print("Enter Space Separated RGB values of Text Color: ", end="")
-r,g,b=map(str,input().split())
+showinfo("Info","On the next screen, choose a template image.")
+currdir = os.getcwd()
+template = askopenfilename(parent=root, initialdir=currdir, title='Please select an image', filetypes =[('PNG File', '*.png'), ('JPEG File', '*.jpg')])
 
+showinfo("Info","On the next screen, choose a CSV file for getting names of participants.")
+currdir = os.getcwd()
+filename = askopenfilename(parent=root, initialdir=currdir, title='Please select a csv file', filetypes =[('CSV File', '*.csv')])
 
-#Open CSV File
-data=pd.read_csv(filename)
+msgBox=askquestion('Info', 'Do you want to add participant images?')
+if msgBox=='yes':
+	imgParticipantCheck=True
+else:
+	imgParticipantCheck=False
 
-for row in data[col]: #Scan names row by row
+if (imgParticipantCheck):
+	showinfo("Info","On the next screen, choose where the participant images are located.")
+	currdir = os.getcwd()
+	img_directory = askdirectory(parent=root, initialdir=currdir, title='Please select a directory')
+else: 
+	img_directory=None
 
-	writeimage(template,font,size,coorx, coory,row,"rgb("+r+","+g+","+b+")")
+showinfo("Info","On the next screen, choose a font.")
+currdir = os.getcwd()
+font = askopenfilename(parent=root, initialdir=currdir, title='Please select a csv file', filetypes =[('TrueType font file', '*.ttf')])
+
+col,size=inputColumnAndSize()
+
+showinfo("Info","On the next screen, click where text should be placed.")
+coorx,coory=spaceSelector(template)
+
+if (imgParticipantCheck):
+	showinfo("Info", "On the next screen, click where image of participant should be placed.")
+	coorximg,cooryimg=spaceSelector(template)
+else:
+	coorximg,cooryimg=None,None
+
+showinfo("Info","On the next screen, choose a color for the font.")
+r,g,b=askcolor()[0]
+r,g,b=str(int(r)),str(int(g)),str(int(b))
+
+showinfo("Info","On the next screen, choose where the output files should be saved.")
+currdir = os.getcwd()
+directory = askdirectory(parent=root, initialdir=currdir, title='Please select a directory')
+
+# Open CSV File
+data=read_csv(filename)
+
+for row in data[col]: # Scan names row by row
+	writeImage(template,font,size,coorx, coory,row,"rgb("+r+","+g+","+b+")", directory,coorximg,cooryimg,img_directory,imgParticipantCheck)
+
+showinfo("Info","Certificates generated successfully!")
+
 
