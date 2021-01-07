@@ -102,8 +102,8 @@ directory = askdirectory(parent=root, initialdir=currdir, title='Please select a
 # Open CSV File
 data=read_csv(filename)
 
-for row in data[col]: # Scan names row by row
-	writeImage(template,font,size,coorx, coory,row,"rgb("+r+","+g+","+b+")", directory,coorximg,cooryimg,img_directory,imgParticipantCheck)
+for sno, row in enumerate(data[col],1): # Scan names row by row
+	writeImage(template,font,size,coorx,coory,row,"rgb("+r+","+g+","+b+")", directory,coorximg,cooryimg,img_directory,imgParticipantCheck,sno)
 
 showinfo("Info","Certificates generated successfully!")
 
