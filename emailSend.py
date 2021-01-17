@@ -51,12 +51,15 @@ def sendEmailPDF(path_to_pdf, subject, message, destination, password_path=None)
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     
-    server.login('60099aadarsh.gbkm@gmail.com', 'aadarsh2003')
+    # Uncomment and replace email_user with your email, replace password_user with you password.
+    # email_user = ''
+    # password_user = ''
+    server.login(email_user, password_user)
     msg = MIMEMultipart()
 
     message = f'{message}'
     msg['Subject'] = subject
-    msg['From'] = '60099aadarsh.gbkm@gmail.com'
+    msg['From'] = email_user
     msg['To'] = destination
     # Insert the text to the msg going by e-mail
     msg.attach(MIMEText(message, "plain"))

@@ -82,6 +82,10 @@ font = askopenfilename(parent=root, initialdir=currdir, title='Please select a c
 
 col,size=inputColumnAndSize()
 
+showinfo("Info","On the next screen, choose a color for the font.")
+r,g,b=askcolor()[0]
+r,g,b=str(int(r)),str(int(g)),str(int(b))
+
 showinfo("Info","On the next screen, click where text should be placed.")
 coorx,coory=spaceSelector(template)
 
@@ -90,10 +94,6 @@ if (imgParticipantCheck):
 	coorximg,cooryimg=spaceSelector(template)
 else:
 	coorximg,cooryimg=None,None
-
-showinfo("Info","On the next screen, choose a color for the font.")
-r,g,b=askcolor()[0]
-r,g,b=str(int(r)),str(int(g)),str(int(b))
 
 showinfo("Info","On the next screen, choose where the output files should be saved.")
 currdir = os.getcwd()
