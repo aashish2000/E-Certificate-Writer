@@ -80,11 +80,11 @@ showinfo("Info","On the next screen, choose a font.")
 currdir = os.getcwd()
 font = askopenfilename(parent=root, initialdir=currdir, title='Please select a csv file', filetypes =[('TrueType font file', '*.ttf')])
 
-col,size=inputColumnAndSize()
-
 showinfo("Info","On the next screen, choose a color for the font.")
 r,g,b=askcolor()[0]
 r,g,b=str(int(r)),str(int(g)),str(int(b))
+
+col,size=inputColumnAndSize()
 
 showinfo("Info","On the next screen, click where text should be placed.")
 coorx,coory=spaceSelector(template)

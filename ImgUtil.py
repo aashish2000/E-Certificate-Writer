@@ -6,9 +6,9 @@ def writeImage(template,font,size,coorx,coory,msg,rgb,directory,coorximg,cooryim
 	image = Image.open(template)
 	if (imgParticipantCheck):
 		try:
-			img_p = Image.open(img_directory+'/'+msg+".png")
+			img_p = Image.open(img_directory+'/'+str(sno)+'-'+msg+".png")
 		except:
-			img_p = Image.open(img_directory+'/'+msg+".jpg")
+			img_p = Image.open(img_directory+'/'+str(sno)+'-'+msg+".jpg")
 
 		participant_img = img_p.copy()
 		participant_img.thumbnail((100,100)) # Resizing participant image
