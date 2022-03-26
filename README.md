@@ -27,7 +27,9 @@ pip install -r requirements.txt
 
 ```sh
 python3 writeCertificates.py
+python3 emailSend.py
 ```
 
 - Enter all the required details for positioning and writing the text
 - The final certificates are stored as pdf files in the Output Directory
+- All certificates can be bulk emailed after adding them in the participant_email.csv
